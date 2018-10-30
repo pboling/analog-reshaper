@@ -1,0 +1,16 @@
+AllCops:
+  DisplayCopNames: true # Display the name of the failing cops
+  Exclude:
+    - 'gemfiles/vendor/**/*'
+    - 'vendor/**/*'
+
+Metrics/BlockLength:
+  ExcludedMethods:
+    - context
+    - describe
+    - it
+    - shared_context
+    - shared_examples
+    - shared_examples_for
+    - namespace
+    - draw
