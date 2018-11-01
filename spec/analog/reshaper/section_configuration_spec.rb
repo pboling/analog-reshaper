@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
-
 RSpec.describe Analog::Reshaper::SectionConfiguration do
   let(:range) { 2..10 }
   let(:factors) { [1.5, 2.0, 2.5] }

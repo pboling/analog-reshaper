@@ -5,18 +5,22 @@ module Analog
       FACTOR_METHODS = %i[+ *].freeze
       # shaping area under the curve, vs shaping area over the curve
       COVERAGE_TYPES = %i[under over].freeze
+      # The shaping config hash keys - are they increasing or decreasing in size?
+      DIRECTIONS = %i[decreasing increasing].freeze
 
       extend Forwardable
       extend Memoist
 
-      attr_reader :cutoff_ranges, :factor_method, :coverage_type, :sections
+      attr_reader :cutoff_ranges, :factor_method, :coverage_type, :direction, :sections
 
-      def initialize(section_configs:, factor_method:, coverage_type:)
+      def initialize(section_configs:, factor_method:, coverage_type:, direction:)
         raise ArgumentError, "#{self.class}##{__method__} factor_method must be one of #{FACTOR_METHODS}" unless FACTOR_METHODS.include?(factor_method)
         raise ArgumentError, "#{self.class}##{__method__} coverage_type must be one of #{COVERAGE_TYPES}" unless COVERAGE_TYPES.include?(coverage_type)
+        raise ArgumentError, "#{self.class}##{__method__} direction must be one of #{DIRECTIONS}" unless DIRECTIONS.include?(direction)
 
         @factor_method = factor_method
         @coverage_type = coverage_type
+        @direction = direction
 
         rash = Hashie::Rash.new
         configs = Hashie::Rash.new(section_configs)
@@ -39,12 +43,21 @@ module Analog
       end
 
       def maximum
-        cutoff_ranges.map(&:end).max
+        [cutoff_ranges.first.end, cutoff_ranges.last.end].max
       end
       memoize :maximum
 
       def [](value)
         sections[value]
+      end
+
+      def noop_modifier
+        case factor_method
+        when :+ then 0
+        when :* then 1
+        else
+          raise "Invalid factor_method for #{self.class}##{__method__}"
+        end
       end
 
       private
