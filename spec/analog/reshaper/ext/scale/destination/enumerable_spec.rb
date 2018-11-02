@@ -7,10 +7,10 @@ RSpec.describe Scale::Destination::Enumerable do
       block_is_expected.to_not raise_error
     end
   end
-  describe '#preceding_calculable' do
-    subject { described_class.new([]).preceding_calculable? }
-    it 'is true' do
-      is_expected.to eq(true)
+  describe '#antecedent_calculable' do
+    subject { described_class.new([]).cedent_calculable? }
+    it 'is set' do
+      is_expected.to eq(false)
     end
   end
   describe '#scale' do
@@ -37,15 +37,26 @@ RSpec.describe Scale::Destination::Enumerable do
       is_expected.to eq(5)
     end
   end
-  describe '#preceding' do
+  describe '#antecedent' do
     let(:enum) { [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }
     let(:input) { 600 }
     let(:source) { Scale::Source.new(0..1000) }
     let(:instance) { described_class.new(enum) }
     before { instance.scale(input, source) }
-    subject { instance.preceding }
+    subject { instance.antecedent }
     it 'is set' do
       is_expected.to eq([0, 1, 2, 3, 4])
+    end
+  end
+  describe '#succedent' do
+    let(:enum) { [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }
+    let(:input) { 600 }
+    let(:source) { Scale::Source.new(0..1000) }
+    let(:instance) { described_class.new(enum) }
+    before { instance.scale(input, source) }
+    subject { instance.succedent }
+    it 'is set' do
+      is_expected.to eq([6, 7, 8, 9, 10])
     end
   end
 end

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe Analog::Reshaper::ShapingConfiguration do
-  context 'increasing shape' do
+  context 'antecedent shape' do
     let(:section_configs) do
       {
           1..1      => [1],
@@ -12,13 +12,13 @@ RSpec.describe Analog::Reshaper::ShapingConfiguration do
     end
     let(:factor_method) { :* }
     let(:coverage_type) { :over }
-    let(:direction) { :increasing }
+    let(:cumulative_direction) { :antecedent }
     let(:arguments) do
       {
           section_configs: section_configs,
           factor_method: factor_method,
           coverage_type: coverage_type,
-          direction: direction
+          cumulative_direction: cumulative_direction
       }
     end
     let(:shaping_configuration) { described_class.new(**arguments) }
@@ -58,11 +58,11 @@ RSpec.describe Analog::Reshaper::ShapingConfiguration do
             is_expected.to eq(:*)
           end
         end
-        context 'direction' do
-          subject { shaping_configuration.direction }
+        context 'cumulative_direction' do
+          subject { shaping_configuration.cumulative_direction }
           it 'is set' do
             is_expected.to be_a(Symbol)
-            is_expected.to eq(:increasing)
+            is_expected.to eq(:antecedent)
           end
         end
       end
@@ -80,7 +80,7 @@ RSpec.describe Analog::Reshaper::ShapingConfiguration do
       end
     end
   end
-  context 'decreasing shape' do
+  context 'succedent shape' do
     let(:section_configs) do
       {
           101..1000 => [1.5, 2.0, 2.5],
@@ -91,13 +91,13 @@ RSpec.describe Analog::Reshaper::ShapingConfiguration do
     end
     let(:factor_method) { :* }
     let(:coverage_type) { :over }
-    let(:direction) { :decreasing }
+    let(:cumulative_direction) { :antecedent }
     let(:arguments) do
       {
           section_configs: section_configs,
           factor_method: factor_method,
           coverage_type: coverage_type,
-          direction: direction
+          cumulative_direction: cumulative_direction
       }
     end
     let(:shaping_configuration) { described_class.new(**arguments) }
@@ -137,11 +137,11 @@ RSpec.describe Analog::Reshaper::ShapingConfiguration do
             is_expected.to eq(:*)
           end
         end
-        context 'direction' do
-          subject { shaping_configuration.direction }
+        context 'cumulative_direction' do
+          subject { shaping_configuration.cumulative_direction }
           it 'is set' do
             is_expected.to be_a(Symbol)
-            is_expected.to eq(:decreasing)
+            is_expected.to eq(:antecedent)
           end
         end
       end

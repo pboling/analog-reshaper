@@ -1,6 +1,7 @@
 require 'bundler/setup'
 
 # External Gems
+require 'pry-byebug'
 require 'byebug'
 require 'rspec/block_is_expected'
 

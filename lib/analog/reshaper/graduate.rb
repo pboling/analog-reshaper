@@ -1,16 +1,87 @@
 module Analog
   module Reshaper
+    # Purpose:
+    #
+    # 1. Find the input value on the value source range
+    # 2. Map it to the
     class Graduate
       extend Forwardable
       extend Memoist
-      def_delegators :@shaping_config, :maximum, :factor_method, :coverage_type
-      def_delegators :@section, :range, :factors, :cumulative, :distance, :first, :last
-      attr_reader :input_value, :output_value, :shaping_config, :section
+      # TODO: coverage_type may be vestigial.  Remove if no purpose.
+      def_delegators :@shaping_config, :maximum, :minimum, :factor_method,
+                     :coverage_type, :cumulative_direction, :noop_modifier
+      def_delegators :@section, :range, :factors, :cumulative, :distance,
+                     :first, :last, :value_source, :shape_destination,
+                     :factor_for_input, :portion
+      attr_reader :input_value,
+                  :output_value,
+                  :shaping_config,
+                  :section,
+                  :applicable_factor,
+                  :portion_of_section,
+                  :section_applicable_factor,
+                  :portion_of_section_applicable_factor,
+                  :num_antecedent_sections_by_shape
       def initialize(input:, shaping_config:)
         @input_value = input
+        puts "#{self.class} input_value: #{@input_value}"
         @shaping_config = shaping_config
-        @section = self.shaping_config[input]
-        @output_value = reshaped
+        puts "#{self.class} shaping_config: #{@shaping_config.ai}"
+        @section = @shaping_config[@input_value]
+        puts "#{self.class} section: #{@section.inspect.green}"
+        if @section && factors.any?
+          @applicable_factor = factor_for_input(input)
+          puts "#{self.class} applicable_factor: #{@applicable_factor}"
+          @portion_of_section = portion(@input_value)
+          puts "#{self.class} portion_of_section: #{@portion_of_section}"
+          # The factor method, e.g. :*, is the manner the various factors are applied to the input_value
+          #   cumulative - the product, or sum, of all the antecedent or succedent sections' factors
+          #
+          # cumulative: product of factors due to :* handling in section config
+          # cumulative: sum of factors due to :+ handling in section config
+          # in modifying the input value:
+          # 1. modify it according to the cumulative, which forms the "cedent_base"
+          #   input_value.send(factor_method, cumulative)
+          # 2. modify it according to the relevant section's cedent factors
+          #   input_value.send(factor_method, cumulative_cedent_factor)
+          # 3. modify it according to the portion of applicable factor
+          #   input_value.send(factor_method, cumulative_cedent_factor * applicable_factor)
+          puts "====== NOT SURE WHAT TO DO HERE ======"
+          @input_modified_by_cedent_cumulative_base_product = cumulative ? input_value.send(factor_method, cumulative) : 0
+          puts "#{self.class} input_modified_by_cedent_cumulative_base_product: #{@input_modified_by_cedent_cumulative_base_product}"
+          @num_antecedent_factors_by_shape = shape_destination.antecedent.length
+          puts "#{self.class} num_antecedent_factors_by_shape: #{@num_antecedent_factors_by_shape}"
+          cedent_section_product = shape_destination.send(cumulative_direction).inject(factor_method)
+          puts "#{self.class} cedent_section_product: #{cedent_section_product}"
+          @input_modified_by_covered_section_shape = cedent_section_product ? input_value.send(factor_method, cedent_section_product) : 0
+          puts "#{self.class} input_modified_by_covered_section_shape: #{@input_modified_by_covered_section_shape}"
+
+          # How much of the applicable factor is actually applicable?
+          distance_per_factor = distance / factors.length
+          puts"#{self.class} distance_per_factor: #{distance_per_factor}"
+          num_antecedent_factors, factor_distance_covered = input.divmod(distance_per_factor)
+          puts"#{self.class} num_antecedent_factors: #{num_antecedent_factors}"
+          if num_antecedent_factors == @num_antecedent_factors_by_shape
+            # This is best case scenario, the input was mapped to the factor that applies linearly, percentage-wise
+            percent_of_applicable_factor = Rational(factor_distance_covered, distance_per_factor)
+            @portion_of_section_applicable_factor = applicable_factor * percent_of_applicable_factor
+            puts "#{self.class} portion_of_section_applicable_factor: #{@portion_of_section_applicable_factor}"
+            @section_applicable_factor = @partial_factor ? input_value.send(factor_method, @portion_of_section_applicable_factor) : 0
+            puts "#{self.class} section_applicable_factor: #{@section_applicable_factor}"
+          elsif num_antecedent_factors > @num_antecedent_factors_by_shape
+            # This is fairly common because the scale gem does't align linearly, perfectly, every time.
+            percent_of_applicable_factor = Rational(factor_distance_covered, distance_per_factor)
+            @portion_of_section_applicable_factor = applicable_factor * percent_of_applicable_factor
+            puts "#{self.class} portion_of_section_applicable_factor: #{@portion_of_section_applicable_factor}"
+            @section_applicable_factor = @partial_factor ? input_value.send(factor_method, @portion_of_section_applicable_factor) : 0
+            puts "#{self.class} section_applicable_factor: #{@section_applicable_factor}"
+          end
+          @output_value = reshaped
+        else
+          # Oops, input is outside all configured sections.  Unable to shape!
+          @output_value = input < minimum ? minimum : input > maximum ? maximum : input
+        end
+        puts "#{self.class} output_value: #{@output_value}"
       end
 
       def to_i
@@ -21,130 +92,22 @@ module Analog
         output_value.to_f
       end
 
-      private
-
-      # given a value between 0 and 1, within the range of this section,
-      #   return the rescaled value
       def reshaped
-        if :over
-          raise "DivideByZero Error in #{self.class}##{__method__} for input_value #{input_value} with #{section}" if denominator == 0
-
-          Rational(maximum, denominator).to_i
+        if cumulative_direction
+          case factor_method
+          when :* then
+            # The product of factors from the sections before or after this section
+            (@input_modified_by_cedent_cumulative_base_product || noop_mofidier) +
+                # The product of factors from this section before or after the applicable factor
+                (@input_modified_by_covered_section_shape || noo_modifier) +
+                # The portion of the applicable factor from this section
+                (@input_modified_by_section_applicable_factor || noop_modifier)
+          else
+            raise "Reshaping with factor_method #{factor_method} is not yet implemented"
+          end
         else
-          # TODO: Figure out :under logic
-          # (rank + (rank * factor(input_value))).to_i
+          raise "Reshaping without a cumulative_direction is not yet implemented"
         end
-      end
-
-      # e.g.
-      #   numerator is:          549_547_150_329
-      #                                        /
-      #   denominator is:                  1_000
-      #                                        =
-      #   if final value is:         549_547_150
-      #
-      def denominator
-        # If the input_value is 0.3999:
-        #   factors_fully_not_covered = 3
-        # which is used as an index into the sectioned factors of this range, e.g:
-        #   >> section_factors.map(&:to_s)
-        #   => ["1.21", "1.21", "4.0", "1.3", "1.3", "1.3", "1.3", "1.3", "1.3"]
-        # With this example:
-        #   fully_not_covered_factor is 1.21 * 1.21 * 3.0 * all factors of previous sections.
-        #   partially_not_covered_factor is (1 + ((1.3 - 1) * 0.3999))
-        fully_not_covered_factor * partially_not_covered_factor
-      end
-      memoize :denominator
-
-      def partially_not_covered_factor
-        partial_factor = factors[partially_not_covered_factor_index]
-        if partial_factor.nil?
-          1
-        else
-          # modify the partial factor relative to the portion not_covered.
-          1 + ((partial_factor - 1) * section_not_covered_ratio)
-        end
-      end
-      memoize :partially_not_covered_factor
-
-      def fully_not_covered_factor
-        if fully_not_covered_factor_index.nil?
-          cumulative
-        else
-          # where factor_method is one of :* or :+
-          cumulative.send(factor_method, fully_not_covered_factors.inject(factor_method))
-        end
-      end
-
-      def fully_not_covered_factors
-        factors[0..fully_not_covered_factor_index]
-      end
-
-      def fully_not_covered_factor_index
-        if section_fully_not_covered?
-          # :all factors: #
-          num_factors
-        else
-          # :partial: #
-          return num_factors if partially_not_covered_factor_index > num_factors
-          return nil if partially_not_covered_factor_index < 1
-
-          partially_not_covered_factor_index - 1
-        end
-      end
-      memoize :fully_not_covered_factor_index
-
-      # returns an integer
-      def partially_not_covered_factor_index
-        if portion_per_factor == 0
-          1
-        else
-          Rational(distance_not_covered, portion_per_factor).to_i
-        end
-      end
-      memoize :partially_not_covered_factor_index
-
-      def distance_not_covered
-        distance * section_not_covered_ratio
-      end
-
-      # What is the coverage size of each factor?
-      def portion_per_factor
-        if num_factors == 0
-          1
-        else
-          Rational(distance, num_factors)
-        end
-      end
-      memoize :portion_per_factor
-
-      def num_factors
-        factors.length
-      end
-
-      # All factors are fully not_covered if true!
-      # Technically this should not happen, as if it did it should have bumped
-      #   up to the next partially not_covered section.
-      def section_fully_not_covered?
-        section_not_covered_ratio == 1
-      end
-
-      # Total amount of this section that is not_covered, as a ratio between 0 and 1
-      def section_not_covered_ratio
-        if distance == 0
-          1
-        else
-          Rational(incomplete, distance)
-        end
-      end
-      memoize :section_not_covered_ratio
-
-      def complete
-        input_value - low_end
-      end
-
-      def incomplete
-        high_end - input_value
       end
 
       def high_end
@@ -153,12 +116,6 @@ module Analog
 
       def low_end
         first
-      end
-
-      ### Useful for debugging ###
-
-      def percentage_per_factor
-        portion_per_factor * 100
       end
     end
   end

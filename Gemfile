@@ -3,6 +3,8 @@ source 'https://rubygems.org'
 git_source(:github) { |repo_name| "https://github.com/#{repo_name}" }
 
 gem 'analog', require: 'scale'
+gem 'awesome_print'
+gem 'colorize'
 
 group :test do
   gem 'byebug', '~> 10', platform: :mri, require: false

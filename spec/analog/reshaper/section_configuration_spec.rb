@@ -6,9 +6,10 @@ RSpec.describe Analog::Reshaper::SectionConfiguration do
   let(:cumulative) { 100 }
   let(:factor_method) { :* }
   let(:coverage_type) { :over }
+  let(:cumulative_direction) { :antecedent }
   let(:arguments) do
     [
-      range, factors, cumulative, factor_method, coverage_type
+      range, factors, cumulative, factor_method, coverage_type, cumulative_direction
     ]
   end
   let(:section) { described_class.new(*arguments) }
