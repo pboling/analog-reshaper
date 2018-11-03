@@ -11,13 +11,11 @@ RSpec.describe Analog::Reshaper::ShapingConfiguration do
       }
     end
     let(:factor_method) { :* }
-    let(:coverage_type) { :over }
     let(:cumulative_direction) { :antecedent }
     let(:arguments) do
       {
           section_configs: section_configs,
           factor_method: factor_method,
-          coverage_type: coverage_type,
           cumulative_direction: cumulative_direction
       }
     end
@@ -42,13 +40,6 @@ RSpec.describe Analog::Reshaper::ShapingConfiguration do
             is_expected.to eq(section_configs.keys)
             expect(subject.first.end).to eq(1)
             expect(subject.last.end).to eq(1000)
-          end
-        end
-        context 'coverage_type' do
-          subject { shaping_configuration.coverage_type }
-          it 'is set' do
-            is_expected.to be_a(Symbol)
-            is_expected.to eq(:over)
           end
         end
         context 'factor_method' do
@@ -90,13 +81,11 @@ RSpec.describe Analog::Reshaper::ShapingConfiguration do
       }
     end
     let(:factor_method) { :* }
-    let(:coverage_type) { :over }
     let(:cumulative_direction) { :antecedent }
     let(:arguments) do
       {
           section_configs: section_configs,
           factor_method: factor_method,
-          coverage_type: coverage_type,
           cumulative_direction: cumulative_direction
       }
     end
@@ -121,13 +110,6 @@ RSpec.describe Analog::Reshaper::ShapingConfiguration do
             is_expected.to eq(section_configs.keys)
             expect(subject.first.end).to eq(1000)
             expect(subject.last.end).to eq(1)
-          end
-        end
-        context 'coverage_type' do
-          subject { shaping_configuration.coverage_type }
-          it 'is set' do
-            is_expected.to be_a(Symbol)
-            is_expected.to eq(:over)
           end
         end
         context 'factor_method' do

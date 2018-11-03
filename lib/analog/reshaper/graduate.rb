@@ -7,9 +7,8 @@ module Analog
     class Graduate
       extend Forwardable
       extend Memoist
-      # TODO: coverage_type may be vestigial.  Remove if no purpose.
       def_delegators :@shaping_config, :maximum, :minimum, :factor_method,
-                     :coverage_type, :cumulative_direction, :noop_modifier
+                     :cumulative_direction, :noop_modifier
       def_delegators :@section, :range, :factors, :cumulative, :distance,
                      :first, :last, :value_source, :shape_destination,
                      :factor_for_input, :portion

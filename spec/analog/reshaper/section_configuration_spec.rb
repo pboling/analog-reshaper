@@ -5,11 +5,10 @@ RSpec.describe Analog::Reshaper::SectionConfiguration do
   let(:factors) { [1.5, 2.0, 2.5] }
   let(:cumulative) { 100 }
   let(:factor_method) { :* }
-  let(:coverage_type) { :over }
   let(:cumulative_direction) { :antecedent }
   let(:arguments) do
     [
-      range, factors, cumulative, factor_method, coverage_type, cumulative_direction
+      range, factors, cumulative, factor_method, cumulative_direction
     ]
   end
   let(:section) { described_class.new(*arguments) }
@@ -45,13 +44,6 @@ RSpec.describe Analog::Reshaper::SectionConfiguration do
         it 'is set' do
           is_expected.to be_a(Symbol)
           is_expected.to eq(:*)
-        end
-      end
-      context 'coverage_type' do
-        subject { section.coverage_type }
-        it 'is set' do
-          is_expected.to be_a(Symbol)
-          is_expected.to eq(:over)
         end
       end
     end
@@ -94,7 +86,7 @@ RSpec.describe Analog::Reshaper::SectionConfiguration do
     subject { section.inspect }
     it 'is a float' do
       is_expected.to be_a(String)
-      is_expected.to match(/<#Analog::Reshaper::SectionConfiguration \d+ 1\.\.2 => \[3, 4\] \(\* over\)>/)
+      is_expected.to match(/<#Analog::Reshaper::SectionConfiguration \d+ 1\.\.2 => \[3, 4\] \(\* antecedent\)>/)
     end
   end
 end

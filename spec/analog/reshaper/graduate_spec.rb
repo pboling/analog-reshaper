@@ -4,7 +4,6 @@ RSpec.describe Analog::Reshaper::Graduate do
   let(:input) { 10 }
   let(:factors) { [1.5, 2.0, 2.5 ] }
   let(:factor_method) { :* }
-  let(:coverage_type) { :over }
   let(:cumulative_direction) { :succedent }
   let(:section_configs) do
     {
@@ -19,7 +18,6 @@ RSpec.describe Analog::Reshaper::Graduate do
     {
         section_configs: section_configs,
         factor_method: factor_method,
-        coverage_type: coverage_type,
         cumulative_direction: cumulative_direction
     }
   end
@@ -109,12 +107,6 @@ RSpec.describe Analog::Reshaper::Graduate do
           is_expected.to eq(:*)
         end
       end
-      context '#coverage_type' do
-        subject { graduate.coverage_type }
-        it 'is set' do
-          is_expected.to eq(:over)
-        end
-      end
       context '#range' do
         subject { graduate.range }
         it 'is set' do
@@ -196,7 +188,6 @@ RSpec.describe Analog::Reshaper::Graduate do
 
   context 'input outside high end of factor key range' do
     let(:factor_method) { :* }
-    let(:coverage_type) { :over }
     let(:cumulative_direction) { :succedent }
     let(:section_configs) do
       {
@@ -215,7 +206,6 @@ RSpec.describe Analog::Reshaper::Graduate do
 
   context 'input outside low end of factor key range' do
     let(:factor_method) { :* }
-    let(:coverage_type) { :over }
     let(:cumulative_direction) { :succedent }
     let(:section_configs) do
       {
@@ -234,7 +224,6 @@ RSpec.describe Analog::Reshaper::Graduate do
 
   context 'input found missing middle section' do
     let(:factor_method) { :* }
-    let(:coverage_type) { :over }
     let(:cumulative_direction) { :succedent }
     let(:section_configs) do
       {
@@ -252,16 +241,15 @@ RSpec.describe Analog::Reshaper::Graduate do
     end
   end
 
-  context 'factor :*, coverage :over, cumulative_direction :succedent, 1..1_000, top reduction, 3 factors' do
+  context 'shrink: factor :*, coverage :over, cumulative_direction :succedent, 1..1_000, 3 factors' do
     {
         1 => 2,
-        # 10 => 20,
-        # 50 => 100,
-        # 100 => 200
+        10 => 11,
+        50 => 51,
+        100 => 101
     }.each do |k, v|
       context ":* #{k}" do
         let(:factor_method) { :* }
-        let(:coverage_type) { :over }
         let(:cumulative_direction) { :succedent }
         let(:section_configs) do
           {
@@ -319,7 +307,6 @@ RSpec.describe Analog::Reshaper::Graduate do
   #   }.each do |k, v|
   #     context ":* #{k}" do
   #       let(:factor_method) { :* }
-  #       let(:coverage_type) { :over }
   #       let(:cumulative_direction) { :succedent }
   #       let(:section_configs) do
   #         {
@@ -382,7 +369,6 @@ RSpec.describe Analog::Reshaper::Graduate do
   #     context ":* #{k}" do
   #       let(:factors) { [1.05, 1.06, 1.07, 1.08, 1.09, 1.1, 1.11, 1.12, 1.13, 1.14, 1.15 ] }
   #       let(:factor_method) { :* }
-  #       let(:coverage_type) { :over }
   #       let(:cumulative_direction) { :succedent }
   #       let(:section_configs) do
   #         {
@@ -445,7 +431,6 @@ RSpec.describe Analog::Reshaper::Graduate do
   #     context ":+ #{k}" do
   #       let(:factors) { [0.01, 0.015, 0.02, 0.025, 0.03, 0.035, 0.04, 0.045, 0.05, 0.055, 0.06, 0.065, 0.07, 0.075, 0.08, 0.085, 0.09, 0.095, 0.1 ] }
   #       let(:factor_method) { :+ }
-  #       let(:coverage_type) { :over }
   #       let(:cumulative_direction) { :succedent }
   #       let(:section_configs) do
   #         {

@@ -3,23 +3,19 @@ module Analog
     class ShapingConfiguration
       # cumulative factor is either a product or a sum
       FACTOR_METHODS = %i[+ *].freeze
-      # shaping area under the curve, vs shaping area over the curve
-      COVERAGE_TYPES = %i[under over].freeze
       # The shaping config hash keys - are they antecedent or succedent in size?
       CUMULATIVE_DIRECTIONS = %i[antecedent succedent].freeze
 
       extend Forwardable
       extend Memoist
 
-      attr_reader :cutoff_ranges, :factor_method, :coverage_type, :cumulative_direction, :sections
+      attr_reader :cutoff_ranges, :factor_method, :cumulative_direction, :sections
 
-      def initialize(section_configs:, factor_method:, coverage_type:, cumulative_direction:)
+      def initialize(section_configs:, factor_method:, cumulative_direction:)
         raise ArgumentError, "#{self.class}##{__method__} factor_method must be one of #{FACTOR_METHODS}" unless FACTOR_METHODS.include?(factor_method)
-        raise ArgumentError, "#{self.class}##{__method__} coverage_type must be one of #{COVERAGE_TYPES}" unless COVERAGE_TYPES.include?(coverage_type)
         raise ArgumentError, "#{self.class}##{__method__} cumulative_direction must be one of #{CUMULATIVE_DIRECTIONS}" unless CUMULATIVE_DIRECTIONS.include?(cumulative_direction)
 
         @factor_method = factor_method
-        @coverage_type = coverage_type
         @cumulative_direction = cumulative_direction
 
         rash = Hashie::Rash.new
@@ -29,12 +25,12 @@ module Analog
           puts "section build: #{range} => #{factors}"
           cumulative = cumulative_by_direction(configs, index)
           puts "section build: cumulative => #{cumulative}"
-          rash[range] = Analog::Reshaper::SectionConfiguration.new(range, factors, cumulative, @factor_method, @coverage_type, @cumulative_direction)
+          rash[range] = Analog::Reshaper::SectionConfiguration.new(range, factors, cumulative, @factor_method, @cumulative_direction)
         end
       end
 
       def to_s
-        "#{factor_method} #{coverage_type} cutoff_ranges: #{cutoff_ranges.ai}"
+        "cutoff_ranges: #{cutoff_ranges.ai} (#{factor_method} #{cumulative_direction})"
       end
 
       def inspect

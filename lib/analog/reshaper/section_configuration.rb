@@ -6,16 +6,15 @@ module Analog
       ANTECEDENT_LINEAR_GRADUATION = Scale::Destination.new(ANTECEDENT_LINEAR_GRADATION_ENUM)
       SUCCEDENT_LINEAR_GRADUATION = Scale::Destination.new(SUCCEDENT_LINEAR_GRADATION_ENUM)
 
-      attr_reader :range, :factors, :cumulative, :factor_method, :coverage_type,
+      attr_reader :range, :factors, :cumulative, :factor_method,
                   :cumulative_direction, :value_source, :shape_destination
-      def initialize(range, factors, cumulative, factor_method, coverage_type, cumulative_direction)
+      def initialize(range, factors, cumulative, factor_method,  cumulative_direction)
         # NOTE: always low to high, e.g.:
         #   => 0.94..0.98
         @range = range
         @factors = factors
         @cumulative = cumulative
         @factor_method = factor_method
-        @coverage_type = coverage_type
         @cumulative_direction = cumulative_direction
         @value_source = Scale::Source.new(range)
         @shape_destination = Scale::Destination.new(factors)
@@ -26,7 +25,7 @@ module Analog
       end
 
       def inspect
-        "<#Analog::Reshaper::SectionConfiguration #{__id__} #{self} => #{factors.inspect} (#{factor_method} #{coverage_type})>"
+        "<#Analog::Reshaper::SectionConfiguration #{__id__} #{self} => #{factors.inspect} (#{factor_method} #{cumulative_direction})>"
       end
 
       # The factor where the next factor is not at all applicable.
