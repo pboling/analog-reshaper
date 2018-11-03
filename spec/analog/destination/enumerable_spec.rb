@@ -1,22 +1,16 @@
 require 'spec_helper'
 
-RSpec.describe Scale::Destination::Enumerable do
+RSpec.describe Analog::Destination::Enumerable do
   describe '#initialize' do
     subject { described_class.new([]) }
     it 'does not raise' do
       block_is_expected.to_not raise_error
     end
   end
-  describe '#antecedent_calculable' do
-    subject { described_class.new([]).cedent_calculable? }
-    it 'is set' do
-      is_expected.to eq(false)
-    end
-  end
   describe '#scale' do
     let(:enum) { [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }
     let(:input) { 600 }
-    let(:source) { Scale::Source.new(0..1000) }
+    let(:source) { Analog::Source.new(0..1000) }
     let(:instance) { described_class.new(enum) }
     subject { instance.scale(input, source) }
     it 'does not raise' do
@@ -29,7 +23,7 @@ RSpec.describe Scale::Destination::Enumerable do
   describe '#index' do
     let(:enum) { [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }
     let(:input) { 600 }
-    let(:source) { Scale::Source.new(0..1000) }
+    let(:source) { Analog::Source.new(0..1000) }
     let(:instance) { described_class.new(enum) }
     before { instance.scale(input, source) }
     subject { instance.index }
@@ -40,7 +34,7 @@ RSpec.describe Scale::Destination::Enumerable do
   describe '#antecedent' do
     let(:enum) { [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }
     let(:input) { 600 }
-    let(:source) { Scale::Source.new(0..1000) }
+    let(:source) { Analog::Source.new(0..1000) }
     let(:instance) { described_class.new(enum) }
     before { instance.scale(input, source) }
     subject { instance.antecedent }
@@ -51,7 +45,7 @@ RSpec.describe Scale::Destination::Enumerable do
   describe '#succedent' do
     let(:enum) { [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }
     let(:input) { 600 }
-    let(:source) { Scale::Source.new(0..1000) }
+    let(:source) { Analog::Source.new(0..1000) }
     let(:instance) { described_class.new(enum) }
     before { instance.scale(input, source) }
     subject { instance.succedent }

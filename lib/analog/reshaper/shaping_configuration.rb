@@ -54,7 +54,7 @@ module Analog
       def noop_modifier
         case factor_method
         when :+ then 0
-        when :* then 1
+        when :* then 0
         else
           raise "Invalid factor_method for #{self.class}##{__method__}"
         end
@@ -91,7 +91,7 @@ module Analog
             # index 2 of 5 element array has 2 succedent indexes, [3, 4]
             # index 3 of 5 element array has 1 succedent index, [4]
             # Do not include index actual
-            cumulative_section_keys = @cutoff_ranges[(index + 1)..(-1)]
+            cumulative_section_keys = @cutoff_ranges[(index + 1)..-1]
             # Hashie::Rash can be accessed by range key, or a value within the range.
             # Here we are accessing by the actual range keys
             configs.values_at(*cumulative_section_keys).flatten.inject(@factor_method)

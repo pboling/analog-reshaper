@@ -4,19 +4,19 @@ RSpec.describe Analog::Reshaper::ShapingConfiguration do
   context 'antecedent shape' do
     let(:section_configs) do
       {
-          1..1      => [1],
-          2..10     => [1.5, 2.0, 2.5],
-          11..100   => [1.5, 2.0, 2.5],
-          101..1000 => [1.5, 2.0, 2.5],
+        1..1 => [1],
+        2..10 => [1.5, 2.0, 2.5],
+        11..100 => [1.5, 2.0, 2.5],
+        101..1000 => [1.5, 2.0, 2.5]
       }
     end
     let(:factor_method) { :* }
     let(:cumulative_direction) { :antecedent }
     let(:arguments) do
       {
-          section_configs: section_configs,
-          factor_method: factor_method,
-          cumulative_direction: cumulative_direction
+        section_configs: section_configs,
+        factor_method: factor_method,
+        cumulative_direction: cumulative_direction
       }
     end
     let(:shaping_configuration) { described_class.new(**arguments) }
@@ -74,19 +74,19 @@ RSpec.describe Analog::Reshaper::ShapingConfiguration do
   context 'succedent shape' do
     let(:section_configs) do
       {
-          101..1000 => [1.5, 2.0, 2.5],
-          11..100   => [1.5, 2.0, 2.5],
-          2..10     => [1.5, 2.0, 2.5],
-          1..1      => [1],
+        101..1000 => [1.5, 2.0, 2.5],
+        11..100 => [1.5, 2.0, 2.5],
+        2..10 => [1.5, 2.0, 2.5],
+        1..1 => [1]
       }
     end
     let(:factor_method) { :* }
     let(:cumulative_direction) { :antecedent }
     let(:arguments) do
       {
-          section_configs: section_configs,
-          factor_method: factor_method,
-          cumulative_direction: cumulative_direction
+        section_configs: section_configs,
+        factor_method: factor_method,
+        cumulative_direction: cumulative_direction
       }
     end
     let(:shaping_configuration) { described_class.new(**arguments) }

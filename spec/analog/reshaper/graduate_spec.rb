@@ -2,30 +2,30 @@
 
 RSpec.describe Analog::Reshaper::Graduate do
   let(:input) { 10 }
-  let(:factors) { [1.5, 2.0, 2.5 ] }
+  let(:factors) { [1.5, 2.0, 2.5] }
   let(:factor_method) { :* }
   let(:cumulative_direction) { :succedent }
   let(:section_configs) do
     {
-        26..1000 => factors,
-        13..25 => factors,
-        6..12  => factors,
-        2..5   => factors,
-        1..1   => [1],
+      25...1000 => factors,
+      12...25 => factors,
+      6...12 => factors,
+      2...6 => factors,
+      1..1 => [1]
     }
   end
   let(:shaping_arguments) do
     {
-        section_configs: section_configs,
-        factor_method: factor_method,
-        cumulative_direction: cumulative_direction
+      section_configs: section_configs,
+      factor_method: factor_method,
+      cumulative_direction: cumulative_direction
     }
   end
   let(:shaping_configuration) { Analog::Reshaper::ShapingConfiguration.new(**shaping_arguments) }
   let(:arguments) do
     {
-        input: input,
-        shaping_config: shaping_configuration
+      input: input,
+      shaping_config: shaping_configuration
     }
   end
   let(:graduate) { described_class.new(**arguments) }
@@ -48,14 +48,14 @@ RSpec.describe Analog::Reshaper::Graduate do
           let(:cumulative_direction) { :succedent }
           it 'is set' do
             is_expected.to be_a(Numeric)
-            is_expected.to eq(101.0)
+            is_expected.to eq(110.02)
           end
         end
         context 'antecedent' do
           let(:cumulative_direction) { :antecedent }
           it 'is set' do
             is_expected.to be_a(Numeric)
-            is_expected.to eq(578.5)
+            is_expected.to eq(577.5)
           end
         end
       end
@@ -74,7 +74,7 @@ RSpec.describe Analog::Reshaper::Graduate do
       context '#value_source' do
         subject { graduate.value_source }
         it 'is set' do
-          is_expected.to be_a(Scale::Source::Range)
+          is_expected.to be_a(Analog::Source::Range)
         end
         context '#denominator' do
           subject { graduate.value_source.denominator }
@@ -86,12 +86,24 @@ RSpec.describe Analog::Reshaper::Graduate do
       context '#shape_destination' do
         subject { graduate.shape_destination }
         it 'is set' do
-          is_expected.to be_a(Scale::Destination::Enumerable)
+          is_expected.to be_a(Analog::Destination::Enumerable)
         end
-        context '#cedent_calculable?' do
-          subject { graduate.shape_destination.cedent_calculable? }
+        context '#antecedent' do
+          subject { graduate.shape_destination.antecedent }
           it 'is set' do
-            is_expected.to eq(true)
+            is_expected.to eq([1.5])
+          end
+        end
+        context '#succedent' do
+          subject { graduate.shape_destination.succedent }
+          it 'is set' do
+            is_expected.to eq([2.5])
+          end
+        end
+        context '#index' do
+          subject { graduate.shape_destination.index }
+          it 'is set' do
+            is_expected.to eq(1)
           end
         end
       end
@@ -110,7 +122,7 @@ RSpec.describe Analog::Reshaper::Graduate do
       context '#range' do
         subject { graduate.range }
         it 'is set' do
-          is_expected.to eq(6..12)
+          is_expected.to eq(6...12)
         end
       end
       context '#factors' do
@@ -141,18 +153,6 @@ RSpec.describe Analog::Reshaper::Graduate do
           is_expected.to eq(6)
         end
       end
-      context '#first' do
-        subject { graduate.first }
-        it 'is set' do
-          is_expected.to eq(6)
-        end
-      end
-      context '#last' do
-        subject { graduate.last }
-        it 'is set' do
-          is_expected.to eq(12)
-        end
-      end
       context '#low_end' do
         subject { graduate.low_end }
         it 'is set' do
@@ -165,13 +165,13 @@ RSpec.describe Analog::Reshaper::Graduate do
           is_expected.to eq(12)
         end
       end
-      context '#portion_of_section' do
-        subject { graduate.portion_of_section }
+      context '#percent_of_section_applicable_factor' do
+        subject { graduate.percent_of_section_applicable_factor }
         it 'does not error' do
           block_is_expected.to_not raise_error
         end
         it 'is ratio' do
-          is_expected.to eq(Rational(17, 50))
+          is_expected.to eq(Rational(501, 1000))
         end
       end
       context '#applicable_factor' do
@@ -191,15 +191,15 @@ RSpec.describe Analog::Reshaper::Graduate do
     let(:cumulative_direction) { :succedent }
     let(:section_configs) do
       {
-          1..100 => [1.0],
+        1..100 => [1.0]
       }
     end
     let(:input) { 101 }
     subject { graduate.output_value }
-    it "does not raise error" do
+    it 'does not raise error' do
       block_is_expected.to_not raise_error
     end
-    it "returns shape maximum" do
+    it 'returns shape maximum' do
       is_expected.to eq(100)
     end
   end
@@ -209,15 +209,15 @@ RSpec.describe Analog::Reshaper::Graduate do
     let(:cumulative_direction) { :succedent }
     let(:section_configs) do
       {
-          10..100 => [1.0],
+        10..100 => [1.0]
       }
     end
     let(:input) { 9 }
     subject { graduate.output_value }
-    it "does not raise error" do
+    it 'does not raise error' do
       block_is_expected.to_not raise_error
     end
-    it "returns shape minimum" do
+    it 'returns shape minimum' do
       is_expected.to eq(10)
     end
   end
@@ -227,33 +227,49 @@ RSpec.describe Analog::Reshaper::Graduate do
     let(:cumulative_direction) { :succedent }
     let(:section_configs) do
       {
-          1..8 => [1.2],
-          10..100 => [1.2],
+        1..8 => [1.2],
+        10..100 => [1.2]
       }
     end
     let(:input) { 9 }
     subject { graduate.output_value }
-    it "does not raise error" do
+    it 'does not raise error' do
       block_is_expected.to_not raise_error
     end
-    it "returns shape minimum" do
+    it 'returns shape minimum' do
       is_expected.to eq(9)
     end
   end
 
   context 'shrink: factor :*, coverage :over, cumulative_direction :succedent, 1..1_000, 3 factors' do
     {
-        1 => 2,
-        10 => 11,
-        50 => 51,
-        100 => 101
+      # 1 => 5.453,
+      # 2 => 10.911999999999999,
+      # 3 => 16.377,
+      # 4 => 21.844,
+      # 5 => 27.32,
+      # 6 => 32.796,
+      # 7 => 38.283,
+      # 8 => 43.768,
+      # 9 => 49.266,
+      # 10 => 54.76,
+      # 20 => 109.02,
+      # 30 => 164.31,
+      # 40 => 218.07999999999998,
+      # 50 => 223.275,
+      # 60 => 265.68,
+      # 70 => 241.92,
+      # 80 => 272.48,
+      90 => 222.165,
+      99 => 247.5,
+      # 100 => 100 # outside the range, so not reshaped!
     }.each do |k, v|
       context ":* #{k}" do
         let(:factor_method) { :* }
         let(:cumulative_direction) { :succedent }
         let(:section_configs) do
           {
-              1..100 => [0, 1.0, 2.0, 1.0],
+            1...100 => [1.0, 1.5, 2.0, 1.5, 1.0]
           }
         end
         let(:input) { k }

@@ -15,7 +15,7 @@ rescue LoadError
     warn 'rspec is disabled'
   end
 end
-task :test => :spec
+task test: :spec
 
 begin
   require 'rubocop/rake_task'
@@ -26,4 +26,4 @@ rescue LoadError
   end
 end
 
-task :default => [:test, :rubocop]
+task default: %i[test rubocop]
