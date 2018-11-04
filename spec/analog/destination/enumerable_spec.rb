@@ -2,9 +2,17 @@ require 'spec_helper'
 
 RSpec.describe Analog::Destination::Enumerable do
   describe '#initialize' do
-    subject { described_class.new([]) }
-    it 'does not raise' do
-      block_is_expected.to_not raise_error
+    context 'non-empty' do
+      subject { described_class.new([1]) }
+      it 'does not raise' do
+        block_is_expected.to_not raise_error
+      end
+    end
+    context 'empty' do
+      subject { described_class.new([]) }
+      it 'raise error' do
+        block_is_expected.to raise_error(ArgumentError, 'enum must have size > 0')
+      end
     end
   end
   describe '#scale' do
@@ -17,7 +25,7 @@ RSpec.describe Analog::Destination::Enumerable do
       block_is_expected.to_not raise_error
     end
     it 'returns value' do
-      is_expected.to eq(5)
+      is_expected.to eq(6)
     end
   end
   describe '#index' do
@@ -28,7 +36,7 @@ RSpec.describe Analog::Destination::Enumerable do
     before { instance.scale(input, source) }
     subject { instance.index }
     it 'is set' do
-      is_expected.to eq(5)
+      is_expected.to eq(6)
     end
   end
   describe '#antecedent' do
@@ -39,7 +47,7 @@ RSpec.describe Analog::Destination::Enumerable do
     before { instance.scale(input, source) }
     subject { instance.antecedent }
     it 'is set' do
-      is_expected.to eq([0, 1, 2, 3, 4])
+      is_expected.to eq([0, 1, 2, 3, 4, 5])
     end
   end
   describe '#succedent' do
@@ -50,7 +58,7 @@ RSpec.describe Analog::Destination::Enumerable do
     before { instance.scale(input, source) }
     subject { instance.succedent }
     it 'is set' do
-      is_expected.to eq([6, 7, 8, 9, 10])
+      is_expected.to eq([7, 8, 9, 10])
     end
   end
 end

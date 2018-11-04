@@ -5,24 +5,31 @@ module Analog
   module Destination
     # Contains logic for dealing with input that includes Ruby's core ::Enumerable
     class Enumerable
+      attr_reader :index, :edge_finder, :proportion, :edge
       # @param [::Enumerable] enum An enumerable (eg Array, Set) to operate with
       def initialize(enum)
-        # @enum = enum
+        # Add a bogus nil to the enum in initialize,
+        #   to right size the mapping to the enum, and need to shunt the
+        #   matches to the nil to the last real element of enum
         @enum = enum.to_a
+        @size = @enum.size
+        raise ArgumentError, "enum must have size > 0" unless @size > 0
+        @edge_finder = Analog::Reshaper::EdgeFinder.lookup(@size)
       end
 
-      # Analog the given input and source using this destination
+      # Scale the given input and source using this destination
       # @param [Numeric] input A numeric value to scale
       # @param [Analog::Source] source The source for the input value
       # @return [Numeric]
       def scale(input, source)
-        proportion = source.numerator(input) / source.denominator
-        @index = [((proportion * @enum.size).to_i - 1), 0].max
-        @enum.at(@index)
-      end
-
-      def index
-        @index
+        @proportion = source.proportion(input)
+        if @proportion
+          @edge = @edge_finder.find_edge(@proportion)
+          @index = @edge.index
+          @enum.at(@index)
+        else
+          input
+        end
       end
 
       def antecedent
@@ -31,6 +38,13 @@ module Analog
 
       def succedent
         @index && @index < (@enum.size - 1) ? @enum.values_at((@index + 1)..-1) : []
+      end
+
+      private
+
+      def sizer(proportion, units)
+        finder_sizer = Rational(units, proportion.denominator)
+        proportion.numerator * finder_sizer
       end
     end
   end

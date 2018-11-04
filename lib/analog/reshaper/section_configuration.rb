@@ -1,13 +1,9 @@
 module Analog
   module Reshaper
     class SectionConfiguration
-      ANTECEDENT_LINEAR_GRADATION_ENUM = (0..1000).to_a
-      SUCCEDENT_LINEAR_GRADATION_ENUM = ANTECEDENT_LINEAR_GRADATION_ENUM.reverse
-      ANTECEDENT_LINEAR_GRADUATION = Analog::Destination.new(ANTECEDENT_LINEAR_GRADATION_ENUM)
-      SUCCEDENT_LINEAR_GRADUATION = Analog::Destination.new(SUCCEDENT_LINEAR_GRADATION_ENUM)
       extend Memoist
       extend Forwardable
-      def_delegators :@shape_destination, :index
+      def_delegators :@shape_destination, :index, :proportion
 
       attr_reader :range, :factors, :cumulative, :factor_method,
                   :cumulative_direction, :value_source, :shape_destination
@@ -44,12 +40,9 @@ module Analog
         factor
       end
 
-      def portion(input)
-        send("#{cumulative_direction}_portion", input)
-      end
-
-      def factor_portion(input)
-        send("#{cumulative_direction}_factor_portion", input)
+      def factor_portion
+        raise 'Failed to set edge_finder on shape_destination' unless shape_destination.edge_finder
+        shape_destination.edge_finder.find_edge(proportion).send("#{cumulative_direction}_portion")
       end
 
       # returns a numeric or nil
@@ -78,74 +71,12 @@ module Analog
 
       private
 
-      # How much of the applicable factor is actually applicable
-      # > 0% up to 100% as a Rational, like (310/1000) for 31.0%
-      def antecedent_portion(input_value)
-        Rational(ANTECEDENT_LINEAR_GRADUATION.scale(input_value, value_source), 1000)
-      end
-
-      # How much of the applicable factor is actually applicable
-      # > 0% up to 100% as a Rational, like (310/1000) for 31.0%
-      def succedent_portion(input_value)
-        Rational(SUCCEDENT_LINEAR_GRADUATION.scale(input_value, value_source), 1000)
-      end
-
       def factor_size
         return nil if factors.length.zero?
 
         distance / factors.length.to_f
       end
       memoize :factor_size
-
-      # If each factor covers the same amount of the range,
-      # then we don't need to actually find the real range
-      def anonymous_factor_source
-        return nil if factor_size.nil? || factor_size <= 0
-
-        Analog::Source.new(0..factor_size)
-      end
-      memoize :anonymous_factor_source
-
-      def anonymous_factor_coverage(input_value)
-        case cumulative_direction
-        when :succedent then
-          # |---------F++++++++|
-          Rational(factor_size - input_value.modulo(factor_size), factor_size)
-        when :antecedent then
-          # |+++++++++F--------|
-          Rational(input_value.modulo(factor_size), factor_size)
-        else
-          raise 'invalid cumulative_direction for anonymous_factor_coverage'
-        end
-      end
-
-      # How much of the applicable factor is actually applicable
-      # > 0% up to 100% as a Rational, like (310/1000) for 31.0%
-      def antecedent_factor_portion(input_value)
-        return 0 unless anonymous_factor_source
-
-        Rational(
-          ANTECEDENT_LINEAR_GRADUATION.scale(
-            anonymous_factor_coverage(input_value),
-            anonymous_factor_source
-          ),
-          1000
-        )
-      end
-
-      # How much of the applicable factor is actually applicable
-      # > 0% up to 100% as a Rational, like (310/1000) for 31.0%
-      def succedent_factor_portion(input_value)
-        return 0 unless anonymous_factor_source
-
-        Rational(
-          SUCCEDENT_LINEAR_GRADUATION.scale(
-            anonymous_factor_coverage(input_value),
-            anonymous_factor_source
-          ),
-          1000
-        )
-      end
     end
   end
 end

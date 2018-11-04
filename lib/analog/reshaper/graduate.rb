@@ -34,7 +34,7 @@ module Analog
         if @section && factors.any?
           @applicable_factor = factor_for_input(@input_value)
           puts "#{self.class} applicable_factor: #{@applicable_factor}"
-          @percent_of_section_applicable_factor = factor_portion(@input_value)
+          @percent_of_section_applicable_factor = factor_portion
           puts "#{self.class} percent_of_section_applicable_factor: #{@percent_of_section_applicable_factor}"
 
           # The factor method, e.g. :*, is the manner the various factors are applied to the input_value
@@ -58,7 +58,7 @@ module Analog
           #   input_value.send(factor_method, percent_of_applicable_factor * applicable_factor)
           @input_modified_by_section_applicable_factor = input_value.send(factor_method, @percent_of_section_applicable_factor * @applicable_factor)
           puts "#{self.class} input_modified_by_section_applicable_factor: #{@input_modified_by_section_applicable_factor}"
-
+# binding.pry
           @output_value = reshaped
         else
           # Oops, input is outside all configured sections.  Unable to shape!

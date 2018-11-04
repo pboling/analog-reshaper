@@ -10,15 +10,25 @@ module Analog
         @range = range
       end
 
+      def proportion(input)
+        Rational(numerator(input), denominator)
+      end
+
       # @param [Numeric] input
       # @return [Float]
       def numerator(input)
-        (input - @range.first).to_f
+        input - @range.first
       end
 
       # @return [Float]
       def denominator
-        (@range.last - @range.first).abs.to_f
+        # Range#min is nil if last and first are the same value and @range.exclude_end? => true.
+        if !@range.exclude_end? || @range.min
+          den = (@range.last - @range.first).abs
+          den.zero? ? 1 : den
+        else
+          1
+        end
       end
     end
   end

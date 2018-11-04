@@ -10,7 +10,7 @@ module Analog
         @range = range
       end
 
-      # Analog the given input and source using this destination
+      # Scale the given input and source using this destination
       # @param [Numeric] input A numeric value to scale
       # @param [Analog::Source] source The source for the input value
       # @return [Numeric]

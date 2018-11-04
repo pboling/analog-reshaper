@@ -7,13 +7,17 @@ module Analog
     class Enumerable
       # @param [::Enumerable] enum An enumerable (Array, Set, etc) to operate on
       def initialize(enum)
-        @enum = enum
+        @enum = enum.to_a
+      end
+
+      def proportion(input)
+        Rational(numerator(input), denominator)
       end
 
       # @param [Numeric] input
       # @return [Float]
       def numerator(input)
-        @enum.to_a.index(input).to_f
+        @enum.index(input).to_f
       end
 
       # @return [Float]
