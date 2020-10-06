@@ -1,12 +1,5 @@
 # Analog::Reshaper
 
-This gem does one very simple thing very well.  It allows you to use `block_is_expected` similarly to how you would use `is_expected` if a block was wrapping the subject.  Supports the same versions of Ruby that RSpec does, 1.8.7 - current ruby-head, as well as the JRuby equivalents.
-
-```ruby
-subject { Integer(nil) }
-it('raises') { block_is_expected.to raise_error(TypeError) }
-```
-
 | Project                 |  AnonymousActiveRecord |
 |------------------------ | ----------------------- |
 | gem name                |  [analog-reshaper](https://rubygems.org/gems/analog-reshaper) |
@@ -20,9 +13,7 @@ it('raises') { block_is_expected.to raise_error(TypeError) }
 | code triage             |  [![Open Source Helpers](https://www.codetriage.com/pboling/analog-reshaper/badges/users.svg)](https://www.codetriage.com/pboling/analog-reshaper) |
 | homepage                |  [on Github.com][homepage], [on Railsbling.com][blogpage] |
 | documentation           |  [on RDoc.info][documentation] |
-| Spread ~♡ⓛⓞⓥⓔ♡~      |  [🌍 🌎 🌏][peterboling], [🍚][refugees], [➕][gplus], [👼][angellist], [🐛][topcoder], [:shipit:][coderwall], [![Tweet Peter](https://img.shields.io/twitter/follow/galtzo.svg?style=social&label=Follow)][twitter] |
-
-If you only ever want to test subjects wrapped in blocks, and are comfortable with **losing** the standard `is_expected` behavior, see an alternative to this gem [here](https://github.com/christopheraue/ruby-rspec-is_expected_block/).
+| Spread ~♡ⓛⓞⓥⓔ♡~      |  [🌏](https://about.me/peter.boling), [👼](https://angel.co/peter-boling), [:shipit:](http://coderwall.com/pboling), [![Tweet Peter](https://img.shields.io/twitter/follow/galtzo.svg?style=social&label=Follow)](http://twitter.com/galtzo), [🌹](https://nationalprogressiveparty.org) |
 
 ## Installation
 
@@ -50,11 +41,7 @@ require 'analog/reshaper'
 
 ## Usage
 
-The spec suite for this gem has some examples of usage, lightly edited here.
-
-```ruby
-
-```
+The spec suite for this gem has some examples of usage.
 
 ## Development
 
