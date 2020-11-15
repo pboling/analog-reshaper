@@ -1,5 +1,9 @@
 # Analog::Reshaper
 
+## WARNING: This is an unfinished proof of concept.
+
+Not production ready, and perhaps not even executable.  Half-baked, at best.
+
 | Project                 |  AnonymousActiveRecord |
 |------------------------ | ----------------------- |
 | gem name                |  [analog-reshaper](https://rubygems.org/gems/analog-reshaper) |
