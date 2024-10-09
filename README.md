@@ -16,8 +16,8 @@ Not production ready, and perhaps not even executable.  Half-baked, at best.
 | maintainability         |  [![Maintainability](https://api.codeclimate.com/v1/badges/ca0a12604ecc19f5e76d/maintainability)](https://codeclimate.com/github/pboling/analog-reshaper/maintainability) |
 | code triage             |  [![Open Source Helpers](https://www.codetriage.com/pboling/analog-reshaper/badges/users.svg)](https://www.codetriage.com/pboling/analog-reshaper) |
 | homepage                |  [on Github.com][homepage], [on Railsbling.com][blogpage] |
-| documentation           |  [on RDoc.info][documentation] |
-| Spread ~♡ⓛⓞⓥⓔ♡~      |  [🌏](https://about.me/peter.boling), [👼](https://angel.co/peter-boling), [:shipit:](http://coderwall.com/pboling), [![Tweet Peter](https://img.shields.io/twitter/follow/galtzo.svg?style=social&label=Follow)](http://twitter.com/galtzo), [🌹](https://nationalprogressiveparty.org) |
+| documentation           |  [on RubyDoc.info][documentation] |
+| Spread ~♡ⓛⓞⓥⓔ♡~      |  [🌏](https://about.me/peter.boling), [👼](https://angel.co/peter-boling), [:shipit:](http://coderwall.com/pboling), [![Tweet Peter](https://img.shields.io/twitter/follow/galtzo.svg?style=social&label=Follow)](http://twitter.com/galtzo) |
 
 ## Installation
 
@@ -104,7 +104,7 @@ or in a `gemspec`
 
 [semver]: http://semver.org/
 [pvc]: http://guides.rubygems.org/patterns/#pessimistic-version-constraint
-[documentation]: http://rdoc.info/github/pboling/analog-reshaper/frames
+[documentation]: http://rubydoc.info/gems/analog-reshaper
 [homepage]: https://github.com/pboling/analog-reshaper
 [blogpage]: http://www.railsbling.com/tags/analog-reshaper/
 [license]: LICENSE
